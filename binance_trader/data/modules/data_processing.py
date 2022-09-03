@@ -5,10 +5,9 @@ import os.path
 
 
 class ProcessStream:
-    def __init__(self, db: str, row: str, interval: bool) -> None:
+    def __init__(self, db: str, row: str) -> None:
         self._db = db
         self._row = row
-        self._interval = interval
 
     def get_conn_url(self) -> str:
         return self._conn_url
@@ -16,24 +15,18 @@ class ProcessStream:
     def get_row_data(self) -> dict:
         return self._row
 
-    def get_stream_status(self) -> bool:
-        return self._interval
-
     def write_data(self):
         return self._write_data()
 
     def _write_data(self):
-        stream = self._row["stream"]
+        pair = self._row["ps"].lower()
+        contract = self._row["ct"].lower()
+        interval = self._row["k"]["i"]
+        stream = f"{pair}_{contract}_{interval}"
         row, is_closed = self._process_data_dict()
 
-        if self._interval:
-            file_name = f"{stream}_i.csv"
-
-            if is_closed:
-                return self._file_writer(row=row, file_name=file_name)
-        else:
-            file_name = f"{stream}_c.csv"
-            return self._file_writer(row=row, file_name=file_name)
+        file_name = f"{stream}.csv"
+        return self._file_writer(row=row, file_name=file_name)
 
     def _file_writer(self, row, file_name):
         try:
@@ -78,30 +71,30 @@ class ProcessStream:
 
         row = [
             dt.datetime.now(),
-            self._row["data"]["E"],
-            self._row["data"]["ps"],
-            self._row["data"]["ct"],
+            self._row["E"],
+            self._row["ps"],
+            self._row["ct"],
             dt.datetime.strftime(
-                dt.datetime.fromtimestamp(self._row["data"]["k"]["t"] / 1000.0),
+                dt.datetime.fromtimestamp(self._row["k"]["t"] / 1000.0),
                 "%Y-%m-%d %H:%M:%S",
             ),
             dt.datetime.strftime(
-                dt.datetime.fromtimestamp(self._row["data"]["k"]["T"] / 1000.0),
+                dt.datetime.fromtimestamp(self._row["k"]["T"] / 1000.0),
                 "%Y-%m-%d %H:%M:%S",
             ),
-            self._row["data"]["k"]["i"],
-            self._row["data"]["k"]["o"],
-            self._row["data"]["k"]["h"],
-            self._row["data"]["k"]["l"],
-            self._row["data"]["k"]["c"],
-            self._row["data"]["k"]["v"],
-            self._row["data"]["k"]["n"],
-            self._row["data"]["k"]["q"],
-            self._row["data"]["k"]["V"],
-            self._row["data"]["k"]["Q"],
-            self._row["data"]["k"]["x"],
+            self._row["k"]["i"],
+            self._row["k"]["o"],
+            self._row["k"]["h"],
+            self._row["k"]["l"],
+            self._row["k"]["c"],
+            self._row["k"]["v"],
+            self._row["k"]["n"],
+            self._row["k"]["q"],
+            self._row["k"]["V"],
+            self._row["k"]["Q"],
+            self._row["k"]["x"],
         ]
-        is_closed = self._row["data"]["k"]["x"]
+        is_closed = self._row["k"]["x"]
 
         return (
             dict(zip(headers, row)),
