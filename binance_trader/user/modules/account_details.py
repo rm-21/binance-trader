@@ -1,5 +1,3 @@
-import threading
-from typing_extensions import Self
 import pandas as pd
 import asyncio
 from binance import AsyncClient, BinanceSocketManager
