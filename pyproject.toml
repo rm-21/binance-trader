@@ -10,6 +10,7 @@ pandas = "^1.4.4"
 python = "^3.10"
 python-binance = "^1.0.16"
 matplotlib = "^3.5.3"
+typing-extensions = "^4.3.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.8.0"

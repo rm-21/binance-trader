@@ -1318,6 +1318,14 @@ python-versions = ">=3.7"
 test = ["pre-commit", "pytest"]
 
 [[package]]
+name = "typing-extensions"
+version = "4.3.0"
+description = "Backported and Experimental Type Hints for Python 3.7+"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "tzdata"
 version = "2022.2"
 description = "Provider of IANA time zone data"
@@ -1414,7 +1422,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "500533fa0d6b97fe36908e006bd499e15548fe6c20790c37f50cb7c203483f57"
+content-hash = "d771bc4536112089a2d63e9e6d70ad4ab86819bc2c941a12c64c2a069d96edf9"
 
 [metadata.files]
 aiohttp = []
@@ -1561,6 +1569,7 @@ tomli = [
 ]
 tornado = []
 traitlets = []
+typing-extensions = []
 tzdata = []
 tzlocal = []
 ujson = []

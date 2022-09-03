@@ -1,14 +1,14 @@
 import asyncio
-import pandas as pd
-from http import client
-import multiprocessing
 import datetime as dt
+import multiprocessing
 import os
 import pprint
-from binance import Client, AsyncClient, BinanceSocketManager
+
+import pandas as pd
+from binance import AsyncClient, BinanceSocketManager, Client
 from binance.enums import *
-from keys import Keys
 from binance_trader.data.modules.data_stream import DataJob
+from keys import Keys
 
 
 def run_data_stream_job():
@@ -43,14 +43,24 @@ def run_data_stream_job():
             pool.join()
 
 
+async def main():
+    client = AsyncClient(api_key=Keys.API, api_secret=Keys.SECRET, testnet=True)
+    resp = await client.futures_account()
+    pprint.pprint(resp.get("totalWalletBalance"))
+    pprint.pprint(pd.DataFrame(resp.get("positions")))
+    await client.close_connection()
+
+
 if __name__ == "__main__":
     client = Client(api_key=Keys.API, api_secret=Keys.SECRET, testnet=True)
-    pprint.pprint(client.futures_account().keys())
+    # pprint.pprint(client.futures_account().keys())
 
-    pprint.pprint(client.futures_account().get("totalWalletBalance"))
-    pprint.pprint(client.futures_account().get("canTrade"))
-    pprint.pprint(client.futures_account().get("totalCrossWalletBalance"))
-    pprint.pprint(client.futures_account().get("availableBalance"))
-    pprint.pprint(client.futures_account().get("maxWithdrawAmount"))
-    pprint.pprint(client.futures_account().get("assets"))
-    pprint.pprint(client.futures_account().get("positions"))
+    # pprint.pprint(client.futures_account().get("totalWalletBalance"))
+    # pprint.pprint(client.futures_account().get("canTrade"))
+    # pprint.pprint(client.futures_account().get("totalCrossWalletBalance"))
+    # pprint.pprint(client.futures_account().get("availableBalance"))
+    # pprint.pprint(client.futures_account().get("maxWithdrawAmount"))
+    # pprint.pprint(client.futures_account().get("assets"))
+    # pprint.pprint(client.futures_account().get("positions"))
+
+    asyncio.run(main())
