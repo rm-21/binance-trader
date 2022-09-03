@@ -12,7 +12,7 @@ from keys import Keys
 
 
 def run_data_stream_job():
-    db = "/home/rishabh/projects/binance-trader/binance_trader/data/db"
+    db = "/home/rishabh/projects/binance-trader/binance_trader/data/db/price"
     stream_end = dt.datetime(2022, 9, 3, 19, 59, 0, 0)
     interval = AsyncClient.KLINE_INTERVAL_1MINUTE
 
