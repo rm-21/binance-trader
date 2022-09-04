@@ -126,8 +126,9 @@ class SMACrossover(BaseStrategy):
     async def run_strategy(self):
         data_stream = await self.stream_candles()
         while self.start_time <= self.end_time:
-            # d = await data_stream.stream_contract()
-            print(self.start_time, self.end_time)
+            d = await data_stream.stream_contract()
+            asyncio.sleep(100)
+            # print(self.start_time, self.end_time)
 
 
 async def SMAStrategyRun(
@@ -172,23 +173,42 @@ async def SMAStrategyRun(
 
 
 if __name__ == "__main__":
+    api_key = Keys.API
+    api_secret = Keys.SECRET
+    testnet = True
+    interval = AsyncClient.KLINE_INTERVAL_1MINUTE
+    symbol = "BTCUSDT"
+    order_log_loc = (
+        "/home/rishabh/projects/binance-trader/binance_trader/data/db/account"
+    )
+    price_log_loc = "/home/rishabh/projects/binance-trader/binance_trader/data/db/price"
+    start_time = dt.datetime.now()
+    end_time = dt.datetime(2022, 9, 4, 23, 59, 0)
+    start_data_stream = "2 minutes ago UTC"
+    end_data_stream = ""
+    contract_type = ContractType.Perpetual
+    sma_long = 52
+    sma_short = 23
+    limit = sma_long + 1
+    quantity = 0.01
+
     asyncio.run(
         SMAStrategyRun(
-            api_key=Keys.API,
-            api_secret=Keys.SECRET,
-            testnet=True,
-            interval=AsyncClient.KLINE_INTERVAL_1MINUTE,
-            symbol="BTCUSDT",
-            order_log_loc="/home/rishabh/projects/binance-trader/binance_trader/data/db/account",
-            price_log_loc="/home/rishabh/projects/binance-trader/binance_trader/data/db/price",
-            start_time=dt.datetime.now(),
-            end_time=dt.datetime(2022, 9, 4, 22, 30, 0),
-            limit=2,
-            start_data_stream="2 minutes ago UTC",
-            end_data_stream="",
-            contract_type=ContractType.Perpetual,
-            sma_long=52,
-            sma_short=23,
-            quantity=0.01,
+            api_key,
+            api_secret,
+            testnet,
+            interval,
+            symbol,
+            order_log_loc,
+            price_log_loc,
+            start_time,
+            end_time,
+            limit,
+            start_data_stream,
+            end_data_stream,
+            contract_type,
+            sma_long,
+            sma_short,
+            quantity,
         )
     )

@@ -117,8 +117,9 @@ class ProcessCandle:
 
     def _file_writer(self, row):
         try:
-            file_exists = os.path.isfile(f"{self._db}/{self.file_name}")
-            with open(f"{self._db}/{self.file_name}", "a") as file:
+            curr_date = dt.datetime.strftime(dt.datetime.now(), "%Y_%M_%d_%H_%M")
+            file_exists = os.path.isfile(f"{self._db}/{curr_date}_{self.file_name}")
+            with open(f"{self._db}/{curr_date}_{self.file_name}", "a") as file:
                 writer = csv.DictWriter(
                     file,
                     delimiter=",",
@@ -127,10 +128,14 @@ class ProcessCandle:
                 )
 
                 if not file_exists:
-                    print(f"Creating file @ {self._db}/{self.file_name}....")
+                    print(
+                        f"Creating file @ {self._db}/{curr_date}_{self.file_name}...."
+                    )
                     writer.writeheader()
 
-                print(f"{dt.datetime.now()} Writing to File: {self.file_name}")
+                print(
+                    f"{dt.datetime.now()} Writing to File: {curr_date}_{self.file_name}"
+                )
                 writer.writerow(row)
         except Exception as e:
             print(e)
