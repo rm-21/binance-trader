@@ -21,7 +21,8 @@ class DataStreamAsync:
         contractType: ContractType,
         interval: str,
         limit: int,
-        start: dt.datetime,
+        start: str,
+        end: str,
     ):
         self = DataStreamAsync()
         self._db = db
@@ -30,6 +31,7 @@ class DataStreamAsync:
         self._interval = interval
         self._limit = limit
         self._start = start
+        self._end = end
         self._async_client = await AsyncClient.create(testnet=testnet)
         return self
 
@@ -59,7 +61,13 @@ class DataStreamAsync:
 
     @property
     def start(self):
+        # return (self._start - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000
         return self._start
+
+    @property
+    def end(self):
+        # return (self._end - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000
+        return self._end
 
     async def stream_contract(self):
         data = await self.async_client.futures_continous_klines(
@@ -67,6 +75,8 @@ class DataStreamAsync:
             contractType=self.contract_type,
             interval=self.interval,
             limit=self.limit,
+            startTime=self.start,
+            endTime=self.end,
         )
 
         for row in data:
@@ -90,7 +100,8 @@ async def stream_candles(
     contractType: ContractType,
     interval: str,
     limit: int,
-    async_client=None,
+    start: dt.datetime,
+    end: dt.datetime,
 ):
     stream_obj = await DataStreamAsync.stream(
         db=db,
@@ -99,9 +110,11 @@ async def stream_candles(
         contractType=contractType,
         interval=interval,
         limit=limit,
-        async_client=async_client,
+        start=start,
+        end=end,
     )
 
+    print(stream_obj.start, stream_obj.end)
     data = await stream_obj.stream_contract()
     await stream_obj.async_client.close_connection()
     return data
@@ -116,7 +129,11 @@ if __name__ == "__main__":
     testnet = True
     contractType = ContractType.Perpetual
     interval = AsyncClient.KLINE_INTERVAL_1MINUTE
-    limit = 100
+    limit = 50
+    # start_time = dt.datetime(2022, 9, 3, 21, 0, 0)
+    # end_time = dt.datetime(2022, 9, 4, 21, 0, 0)
+    start = "2 minutes ago UTC"
+    end = ""
 
     jobs = [
         stream_candles(
@@ -126,6 +143,8 @@ if __name__ == "__main__":
             contractType=contractType,
             interval=interval,
             limit=limit,
+            start=start,
+            end=end,
         ),
         stream_candles(
             db=db,
@@ -134,6 +153,8 @@ if __name__ == "__main__":
             contractType=contractType,
             interval=interval,
             limit=limit,
+            start=start,
+            end=end,
         ),
     ]
 
