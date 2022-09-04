@@ -26,8 +26,8 @@ if __name__ == "__main__":
     start_data_stream = "2 minutes ago UTC"
     end_data_stream = ""
     contract_type = ContractType.Perpetual
-    sma_long = 12
-    sma_short = 10
+    sma_long = 52
+    sma_short = 23
     limit = sma_long + 1
 
     bot1 = SMAStrategyRun(
