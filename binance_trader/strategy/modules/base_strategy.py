@@ -28,11 +28,18 @@ class BaseStrategy:
         testnet: bool,
         interval: str,
         symbol: str,
+        contract_type: str,
         order_log_loc: str,
+        start_time: dt.datetime,
+        end_time: dt.datetime,
+        limit: int,
+        start_data_stream: str,
+        end_data_stream: str,
     ):
         self = BaseStrategy()
         self._interval = interval
         self._symbol = symbol
+        self._contract_type = contract_type
         self._api_key = api_key
         self._api_secret = (api_secret,)
         self._testnet = testnet
@@ -41,6 +48,12 @@ class BaseStrategy:
         )
         self._symbol_info, self._filters = await self.symbol_info()
         self._order_log_location = order_log_loc
+        self._start_time = start_time
+        self._end_time = end_time
+        self._limit = limit
+        self._start_data_stream = start_data_stream
+        self._end_data_stream = end_data_stream
+        self._contract_type = contract_type
         return self
 
     @property
@@ -48,8 +61,16 @@ class BaseStrategy:
         return self._symbol
 
     @property
+    def contract_type(self):
+        return self._contract_type
+
+    @property
     def interval(self):
         return self._interval
+
+    @property
+    def testnet(self):
+        return self._testnet
 
     @property
     def symbol_info(self):
@@ -62,6 +83,26 @@ class BaseStrategy:
     @property
     def order_log_location(self):
         return self._order_log_location
+
+    @property
+    def start_time(self):
+        return self._start_time
+
+    @property
+    def end_time(self):
+        return self._end_time
+
+    @property
+    def end_data_stream(self):
+        return self._end_data_stream
+
+    @property
+    def start_data_stream(self):
+        return self._start_data_stream
+
+    @property
+    def limit(self):
+        return self._limit
 
     async def symbol_info(self):
         symbol_info = await self.async_client.get_symbol_info(symbol=self.symbol)

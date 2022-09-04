@@ -37,3 +37,9 @@ class OrderStatus:
     PendingCancel = ORDER_STATUS_PENDING_CANCEL
     Rejected = ORDER_STATUS_REJECTED
     Expired = ORDER_STATUS_EXPIRED
+
+
+class ContractType:
+    Perpetual = "PERPETUAL"
+    CurrentQtr = "CURRENT_QUARTER"
+    NextQtr = "NEXT_QUARTER"

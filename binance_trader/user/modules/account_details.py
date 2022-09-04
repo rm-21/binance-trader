@@ -17,4 +17,4 @@ if __name__ == "__main__":
         futures_account_details(api_key=Keys.API, api_secret=Keys.SECRET, testnet=True)
     )
 
-    print(details)
+    print(details["positions"].loc["BTCUSDT"])
