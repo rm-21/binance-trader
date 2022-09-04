@@ -1,6 +1,6 @@
 import asyncio
 import datetime as dt
-
+import time
 import pandas as pd
 from binance import AsyncClient
 from binance.enums import *
@@ -123,12 +123,42 @@ class SMACrossover(BaseStrategy):
 
         return data_stream
 
+    def generate_signal(self):
+        curr_date = dt.datetime.strftime(dt.datetime.now(), "%Y_%M_%d_%H_%M")
+        file_name = f"{self.symbol}_{self.contract_type}_{self.interval}.csv"
+        file = f"{self.price_log_loc}/{curr_date}_{file_name}"
+        last_candle_data = pd.read_csv(file)
+        sma_long, sma_short = (
+            last_candle_data.tail(self.sma_long_length)["close"].mean(),
+            last_candle_data.tail(self.sma_short_length)["close"].mean(),
+        )
+
+        if sma_short > sma_long:
+            return Side.Buy
+        return Side.Sell
+
+    @staticmethod
+    def _time_to_sleep():
+        current_time = time.time()
+        time_to_sleep = 60 - (current_time % 60)
+        return time_to_sleep + 1
+
     async def run_strategy(self):
         data_stream = await self.stream_candles()
         while self.start_time <= self.end_time:
-            d = await data_stream.stream_contract()
-            asyncio.sleep(100)
-            # print(self.start_time, self.end_time)
+            await data_stream.stream_contract(self._time_to_sleep())
+            signal = self.generate_signal()
+            curr_pos = await self.get_curent_asset_position()
+
+            if curr_pos == "NO_POSITION":
+                if signal == Side.Buy:
+                    await self.buy()
+                elif signal == Side.Sell:
+                    await self.sell()
+            elif (curr_pos == "SHORT") and (signal == Side.Buy):
+                await self.buy()
+            elif (curr_pos == "LONG") and (signal == Side.Sell):
+                await self.sell()
 
 
 async def SMAStrategyRun(
@@ -183,12 +213,12 @@ if __name__ == "__main__":
     )
     price_log_loc = "/home/rishabh/projects/binance-trader/binance_trader/data/db/price"
     start_time = dt.datetime.now()
-    end_time = dt.datetime(2022, 9, 4, 23, 59, 0)
+    end_time = dt.datetime(2022, 9, 5, 23, 59, 0)
     start_data_stream = "2 minutes ago UTC"
     end_data_stream = ""
     contract_type = ContractType.Perpetual
-    sma_long = 52
-    sma_short = 23
+    sma_long = 12
+    sma_short = 10
     limit = sma_long + 1
     quantity = 0.01
 

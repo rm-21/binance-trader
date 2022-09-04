@@ -69,7 +69,8 @@ class DataStreamAsync:
         # return (self._end - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000
         return self._end
 
-    async def stream_contract(self):
+    async def stream_contract(self, time_to_sleep):
+        await asyncio.sleep(time_to_sleep)
         data = await self.async_client.futures_continous_klines(
             pair=self.pair,
             contractType=self.contract_type,
