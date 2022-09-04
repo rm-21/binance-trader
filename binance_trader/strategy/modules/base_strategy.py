@@ -136,24 +136,40 @@ async def BaseStrategyRun(
 
     await base_strat_obj.create_new_order(Side.Buy, FutureOrder.Market, 0.05)
     await asyncio.sleep(5)
-    await base_strat_obj.create_new_order(Side.Sell, FutureOrder.Market, 0.05)
+    await base_strat_obj.create_new_order(Side.Sell, FutureOrder.Market, 0.05 * 2)
     await asyncio.sleep(5)
     await base_strat_obj.create_new_order(Side.Buy, FutureOrder.Market, 0.05)
 
     await base_strat_obj.async_client.close_connection()
 
 
+async def run_parallel(jobs):
+    await asyncio.gather(*jobs)
+
+
 if __name__ == "__main__":
-    asyncio.run(
+    jobs = [
         BaseStrategyRun(
             api_key=Keys.API,
             api_secret=Keys.SECRET,
             testnet=True,
             interval=AsyncClient.KLINE_INTERVAL_1MINUTE,
             symbol="BTCUSDT",
-        )
-    )
-    # asyncio.run(base_strat.close_connection())
-    # asyncio.run(base_strat.start_connection())
-    # asyncio.run(base_strat.async_client.futures_account())
-    # print(base_strat.interval)
+        ),
+        BaseStrategyRun(
+            api_key=Keys.API,
+            api_secret=Keys.SECRET,
+            testnet=True,
+            interval=AsyncClient.KLINE_INTERVAL_1MINUTE,
+            symbol="ETHUSDT",
+        ),
+        BaseStrategyRun(
+            api_key=Keys.API,
+            api_secret=Keys.SECRET,
+            testnet=True,
+            interval=AsyncClient.KLINE_INTERVAL_1MINUTE,
+            symbol="ETHUSDT",
+        ),
+    ]
+
+    asyncio.run(run_parallel(jobs))

@@ -100,3 +100,66 @@ class ProcessStream:
             dict(zip(headers, row)),
             is_closed,
         )
+
+
+class ProcessCandle:
+    def __init__(
+        self, db: str, row: list, symbol: str, contract_type: str, interval: str
+    ) -> None:
+        self._db = db
+        self._row = row
+        self.file_name = f"{symbol}_{contract_type}_{interval}.csv"
+
+    @property
+    def write_data(self):
+        row = self._process_candle()
+        return self._file_writer(row=row)
+
+    def _file_writer(self, row):
+        try:
+            file_exists = os.path.isfile(f"{self._db}/{self.file_name}")
+            with open(f"{self._db}/{self.file_name}", "a") as file:
+                writer = csv.DictWriter(
+                    file,
+                    delimiter=",",
+                    lineterminator="\n",
+                    fieldnames=list(row.keys()),
+                )
+
+                if not file_exists:
+                    print(f"Creating file @ {self._db}/{self.file_name}....")
+                    writer.writeheader()
+
+                print(f"{dt.datetime.now()} Writing to File: {self.file_name}")
+                writer.writerow(row)
+        except Exception as e:
+            print(e)
+
+    def _process_candle(self):
+        headers = [
+            "sys_time",
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "close_time",
+        ]
+
+        row = [
+            dt.datetime.now(),
+            dt.datetime.strftime(
+                dt.datetime.fromtimestamp(self._row[0] / 1000.0),
+                "%Y-%m-%d %H:%M:%S",
+            ),
+            self._row[1],
+            self._row[2],
+            self._row[3],
+            self._row[4],
+            dt.datetime.strftime(
+                dt.datetime.fromtimestamp(self._row[6] / 1000.0),
+                "%Y-%m-%d %H:%M:%S",
+            ),
+        ]
+
+        return dict(zip(headers, row))

@@ -27,6 +27,8 @@ class SMACrossover(BaseStrategy):
         interval: str,
         symbol: str,
         order_log_loc: str,
+        sma_long: int,
+        sma_short: int,
     ):
         self = BaseStrategy()
         self._interval = interval
@@ -39,7 +41,18 @@ class SMACrossover(BaseStrategy):
         )
         self._symbol_info, self._filters = await self.symbol_info()
         self._order_log_location = order_log_loc
+
+        self._sma_short = sma_short
+        self._smal_long = sma_long
         return self
+
+    @property
+    def sma_short_length(self):
+        return self._sma_short
+
+    @property
+    def sma_long_length(self):
+        return self._sma_long
 
 
 async def SMAStrategyRun(
@@ -52,6 +65,8 @@ async def SMAStrategyRun(
         interval=interval,
         symbol=symbol,
         order_log_loc="/home/rishabh/projects/binance-trader/binance_trader/data/db/account",
+        sma_long=52,
+        sma_short=23,
     )
 
     await base_strat_obj.create_new_order(Side.Buy, FutureOrder.Market, 0.05)

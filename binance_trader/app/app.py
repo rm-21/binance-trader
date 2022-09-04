@@ -44,15 +44,19 @@ def run_data_stream_job():
 
 
 async def main():
-    client = AsyncClient(api_key=Keys.API, api_secret=Keys.SECRET, testnet=True)
-    resp = await client.futures_account()
-    pprint.pprint(resp.get("totalWalletBalance"))
-    pprint.pprint(pd.DataFrame(resp.get("positions")))
+    client = await AsyncClient.create(testnet=True)
+    kline = await client.futures_continous_klines(
+        pair="btcusdt",
+        contractType="PERPETUAL",
+        interval=AsyncClient.KLINE_INTERVAL_1MINUTE,
+        limit=2,
+    )
+    print(kline)
     await client.close_connection()
 
 
 if __name__ == "__main__":
-    client = Client(api_key=Keys.API, api_secret=Keys.SECRET, testnet=True)
+    # client = Client(api_key=Keys.API, api_secret=Keys.SECRET, testnet=True)
     # pprint.pprint(client.futures_account().keys())
 
     # pprint.pprint(client.futures_account().get("totalWalletBalance"))
